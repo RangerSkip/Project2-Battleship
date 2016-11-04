@@ -24,15 +24,8 @@ def clear_screen():
     print("\033c", end="")
 
 
-
-
-
-
-
-
 if __name__ =='__main__':
-
-# Player 1 setup
+    # Player 1 setup
     name = input("Player 1, what is your name? ")
     p1 = classes.Player(name, 1)
     name = input("Player 2, what is your name? ")
@@ -40,30 +33,25 @@ if __name__ =='__main__':
 
     p1_board = classes.Board()
     p1_guess_board = classes.Board()
-    p1_board.print_board()
     p1_ships = classes.Ship()
     p2_board = classes.Board()
     p2_guess_board = classes.Board()
     p2_ships = classes.Ship()
-
     clear_screen()
 
-    p1_board.make_ships(p1_ships)
+    p1_board.print_board()
+    p1_board.make_ships(p1_ships, p1)
     input("{}, when you are ready, press Enter and pass me to {}.".format(p1.name, p2.name))
     clear_screen()
     input("{}, press Enter when you are ready.".format(p2.name))
-
     clear_screen()
 
     p2_board.print_board()
-    p2_board.make_ships(p2_ships)
+    p2_board.make_ships(p2_ships, p2)
     clear_screen()
 
-
-# Begin the game
-
+    # Begin the game
     while VICTORY == False:
-
         input("{}, when you are ready, press Enter and pass me to {}.".format(p2.name, p1.name))
         clear_screen()
         input("{}, press Enter when you are ready.".format(p1.name))
