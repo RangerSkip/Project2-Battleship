@@ -3,8 +3,6 @@ import pdb
 import re
 import sys
 
-    #pdb.set_trace()
-
 SHIP_INFO = [
     ("Aircraft Carrier", 5),
     ("Battleship", 4),
@@ -29,6 +27,7 @@ SUNK = '#'
 
 class Player(object):
 
+
     def __init__(self, name, number):
         self.name = name
         self.number = number
@@ -38,13 +37,15 @@ class Player(object):
 
     def guess(self, Board, Ship):
         Board.print_board()
-        # Validating for guesses
+    # Validating for guesses
         guess = self.target_check()
         x = ord(guess[:1])-97
         y = int(guess[1:])-1
         hit = 0
+
         clear_screen()
-        # Hit or Miss
+
+    # Hit or Miss
         for item in Ship.ships:
             if guess in Ship.ships[item]["Coordinates"]:
                 hit = 1
@@ -67,9 +68,12 @@ class Player(object):
             Board.board[y][x] = '.'
             Board.print_board()
             print("Miss!")
-        # Win Condition
+
+    # Win Condition
         if self.ships_sunk == len(SHIP_INFO):
             self.victory()
+
+
 
     def target_check(self):
     # target needs to be between a1 and j10
@@ -88,21 +92,21 @@ class Player(object):
             self.guesses.append(target)
         return target
 
+
     def victory(self):
-        print("Congratulations {}! You sunk all of your opponents ships!"
-              .format(self.name))
+        print("Congratulations {}! You sunk all of your opponents ships!".format(self.name))
         print("{} is Victorious!!".format(self.name))
         VICTORY = True
+
+
+
 
 class Ship(object):
 
     def __init__(self):
         self.ships = {}
-        self.coordinates = []
-        self.names = []
 
     def make_ships(self, name, length, position, orientation, Board):
-    # Validating for ship overlap
         self.ships[name] = {"length": length, "Coordinates": {}}
         x = ord(position[:1])
         y = int(position[1:])
@@ -117,40 +121,28 @@ class Ship(object):
                 place = ''.join([chr(x), str(y)])
                 coords[place] = "|"
                 y = y + 1
-
-        for item in self.coordinates:
-            while (item in list(coords.keys()) and
-                   self.ships[name] not in self.names):
-                Board.print_board()
-                position = input("There is an overlap at {}.Please enter a different starting position:".format(item)).replace(" ","")
-                orientation = input("Is it horizontal? (Y/N): ").replace(" ","")
-                clear_screen()
-                x = ord(position[:1])
-                y = int(position[1:])
-                coords = {}
-                if orientation.lower() == "y":
-                    for i in range(0, length):
-                        place = ''.join([chr(x), str(y)])
-                        coords[place] = "-"
-                        x = x + 1
-                elif orientation.lower() == "n":
-                    for i in range(0, length):
-                        place = ''.join([chr(x), str(y)])
-                        coords[place] = "|"
-                        y = y + 1
-
         self.ships[name]["Coordinates"] = coords
+
+    # Validating for ship overlap
         a = list(self.ships[name]["Coordinates"].keys())
-        self.names.append(name)
+        names = []
+        for item in self.ships:
+            names.append(item)
         for item in a:
-            self.coordinates.append(item)
+            for var in names:
+                if item in self.ships[var]["Coordinates"].keys() and self.ships[name] != self.ships[var]:
+                    Board.print_board()
+                    new_position = input("There is an overlap at {}. Please enter a different starting position: ".format(item)).replace(" ","")
+                    new_orientation = input("Is it horizontal? (Y/N): ").replace(" ","")
+                    clear_screen()
+                    self.make_ships(name, length, new_position, new_orientation, Board)
 
     def clear_ships(self):
         for item in self.ships:
             self.ships[item] = {"length": 0, "Coordinates": {}}
 
-class Board(object):
 
+class Board(object):
     def __init__(self):
         self.board = [[EMPTY for x in 'abcdefghij'] for y in range(BOARD_SIZE)]
 
@@ -172,42 +164,36 @@ class Board(object):
             for k,v in Ship.ships[item]["Coordinates"].items():
                 x = ord(k[:1])-97
                 y = int(k[1:])-1
+
                 self.board[y][x] = v
+
         clear_screen()
         self.print_board()
 
-    def make_ships(self, Ship, Player):
+    def make_ships(self, Ship):
         for item in SHIP_INFO:
-            position = input("{}, Place the location of the {} ({} spaces): ".format(Player.name, item[0], item[1])).lower().replace(" ","")
-            x = ord(position[:1])-97
-            y = int(position[1:3])-1
-            while x >= 10 or y >= 10:
-                position = input("{}, {} will not work, please pick a new location: ".format(Player.name, position))
-                x = ord(position[:1])-97
-                y = int(position[1:2])-1
+            position = input("Place the location of the {} ({} spaces): "
+                            .format(item[0], item[1])).lower().replace(" ","")
+
             orientation = input("Is it horizontal? (Y/N): ").lower().replace(" ","")
             orientation = orientation[:1]
-            # Validating for out of bounds ship placement.
-            while (x + int(item[1])) >= 10 and orientation == 'y':
-                clear_screen()
-                self.print_board()
-                position = input("{} is invalid (out of bounds).{} Please try a different location ({}: {} spaces):".format(position, Player.name, item[0], item[1])).lower().replace(" ","")
-                orientation = input("Is it horizontal? (Y/N): ").lower().replace(" ","")
-                orientation = orientation[:1]
-                x = ord(position[:1])-97
-                y = int(position[1:3])-1
-            while (y + int(item[1])) >= 10 and orientation == 'n':
-                clear_screen()
-                self.print_board()
-                position = input("{} is invalid (out of bounds). {} Please try a different location ({}: {} spaces):".format(position, Player.name, item[0], item[1])).lower().replace(" ","")
-                orientation = input("Is it horizontal? (Y/N): ").lower().replace(" ","")
-                orientation = orientation[:1]
-                x = ord(position[:1])-97
-                y = int(position[1:3])-1
 
+        # Validating for out of bounds ship placement
+            x = ord(position[:1])-97
+            y = int(position[1:3])-1
+            while (((x + int(item[1])) > 10) or ((x + int(item[1])) > 10 and orientation == 'n')):
+                clear_screen()
+                self.print_board()
+                position = input("{} is invalid (out of bounds). Place the location of the {} ({} spaces): "
+                                .format(position, item[0], item[1])).lower().replace(" ","")
+                orientation = input("Is it horizontal? (Y/N): ").lower().replace(" ","")
             while orientation != 'y' and orientation != 'n':
                 orientation = input("{} is not a valid input. Is it horizontal? (Y/N): ").lower().replace(" ","")
                 orientation = orientation[:1]
 
+
+
+
+
             Ship.make_ships(item[0], item[1], position, orientation, self)
-            self.update_board(Ship)
+            self.update_board(Ship)\
