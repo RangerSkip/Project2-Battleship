@@ -52,8 +52,7 @@ class Player(object):
                 Ship.ships[item]["Coordinates"][guess] = '*'
                 Board.print_board()
                 print("You hit the {} at {}!".format(item, guess))
-                if all(value == '*' for value in Ship.ships[item]["Coordinates"]
-                       .values()):
+                if all(value == '*' for value in Ship.ships[item]["Coordinates"].values()):
                     sunk = list(Ship.ships[item]["Coordinates"].keys())
                     for a in Ship.ships[item]["Coordinates"]:
                         Ship.ships[item]["Coordinates"][a] = '#'
@@ -74,8 +73,7 @@ class Player(object):
 
     def target_check(self):
     # target needs to be between a1 and j10
-        target = input("{}, please pick a target: ".format(self.name))
-                       .lower().replace(" ","")
+        target = input("{}, please pick a target: ".format(self.name)).lower().replace(" ","")
         x = ord(target[:1])-97
         y = int(target[1:2])-1
     # checking in bounds
@@ -106,7 +104,6 @@ class Ship(object):
     def make_ships(self, name, length, position, orientation, Board):
     # Validating for ship overlap
         self.ships[name] = {"length": length, "Coordinates": {}}
-        print("self.coordinates = {}".format(self.coordinates))
         x = ord(position[:1])
         y = int(position[1:])
         coords = {}
@@ -125,9 +122,7 @@ class Ship(object):
             while (item in list(coords.keys()) and
                    self.ships[name] not in self.names):
                 Board.print_board()
-                position = input("""There is an overlap at {}.
-                                 Please enter a different starting position: """
-                                 .format(item)).replace(" ","")
+                position = input("There is an overlap at {}.Please enter a different starting position:".format(item)).replace(" ","")
                 orientation = input("Is it horizontal? (Y/N): ").replace(" ","")
                 clear_screen()
                 x = ord(position[:1])
@@ -183,53 +178,35 @@ class Board(object):
 
     def make_ships(self, Ship, Player):
         for item in SHIP_INFO:
-            position = input("{}, Place the location of the {} ({} spaces): "
-                            .format(Player.name, item[0], item[1]))
-                            .lower().replace(" ","")
-            orientation = input("Is it horizontal? (Y/N): ")
-                                .lower().replace(" ","")
-            orientation = orientation[:1]
-            # Validating for out of bounds ship placement.
+            position = input("{}, Place the location of the {} ({} spaces): ".format(Player.name, item[0], item[1])).lower().replace(" ","")
             x = ord(position[:1])-97
             y = int(position[1:3])-1
-            # If horizontal, y + len cannot > 10.
-            while (x + int(item[1])) > 10 and orientation == 'y':
-                print(x+int(item[1]))
+            while x >= 10 or y >= 10:
+                position = input("{}, {} will not work, please pick a new location: ".format(Player.name, position))
+                x = ord(position[:1])-97
+                y = int(position[1:2])-1
+            orientation = input("Is it horizontal? (Y/N): ").lower().replace(" ","")
+            orientation = orientation[:1]
+            # Validating for out of bounds ship placement.
+            while (x + int(item[1])) >= 10 and orientation == 'y':
                 clear_screen()
                 self.print_board()
-                position = input("""
-                                 {} is invalid (out of bounds).
-                                 {} Please try a different location
-                                 ({}: {} spaces):
-                                 """
-                                .format(position, Player.name, item[0], item[1]))
-                                .lower().replace(" ","")
-                orientation = input("Is it horizontal? (Y/N): ")
-                                    .lower().replace(" ","")
+                position = input("{} is invalid (out of bounds).{} Please try a different location ({}: {} spaces):".format(position, Player.name, item[0], item[1])).lower().replace(" ","")
+                orientation = input("Is it horizontal? (Y/N): ").lower().replace(" ","")
                 orientation = orientation[:1]
                 x = ord(position[:1])-97
                 y = int(position[1:3])-1
-            # If vertical, x + len cannot > 10.
-            while (y + int(item[1])) > 10 and orientation == 'n':
-                print(y+int(item[1]))
+            while (y + int(item[1])) >= 10 and orientation == 'n':
                 clear_screen()
                 self.print_board()
-                position = input("""
-                                 {} is invalid (out of bounds).
-                                 {} Please try a different location
-                                 ({}: {} spaces):
-                                 """
-                                .format(position, Player.name, item[0], item[1]))
-                                .lower().replace(" ","")
-                orientation = input("Is it horizontal? (Y/N): ")
-                                    .lower().replace(" ","")
+                position = input("{} is invalid (out of bounds). {} Please try a different location ({}: {} spaces):".format(position, Player.name, item[0], item[1])).lower().replace(" ","")
+                orientation = input("Is it horizontal? (Y/N): ").lower().replace(" ","")
                 orientation = orientation[:1]
                 x = ord(position[:1])-97
                 y = int(position[1:3])-1
 
             while orientation != 'y' and orientation != 'n':
-                orientation = input("{} is not a valid input. Is it horizontal? (Y/N): ")
-                                    .lower().replace(" ","")
+                orientation = input("{} is not a valid input. Is it horizontal? (Y/N): ").lower().replace(" ","")
                 orientation = orientation[:1]
 
             Ship.make_ships(item[0], item[1], position, orientation, self)
