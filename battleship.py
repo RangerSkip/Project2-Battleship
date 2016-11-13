@@ -75,4 +75,3 @@ if __name__ =='__main__':
     print("{}'s board: ".format(p2.name))
     p2_board.print_board()
     input("Press Enter to quit.".format())
->>>>>>> origin/master
