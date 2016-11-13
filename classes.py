@@ -174,14 +174,24 @@ class Board(object):
         for item in SHIP_INFO:
             position = input("{}, Place the location of the {} ({} spaces): "
                             .format(Player.name, item[0], item[1])).lower().replace(" ","")
-
+            x = ord(position[:1])-97
+            y = int(position[1:3])-1
+            while x >= 10 or y >= 10:
+                position = input("{}, {} will not work, please pick a new location: ".format(Player.name, position))
+                x = ord(position[:1])-97
+                y = int(position[1:2])-1
             orientation = input("Is it horizontal? (Y/N): ").lower().replace(" ","")
             orientation = orientation[:1]
 
         # Validating for out of bounds ship placement
-            x = ord(position[:1])-97
-            y = int(position[1:3])-1
-            while (((x + int(item[1])) > 10) or ((x + int(item[1])) > 10 and orientation == 'n')):
+
+            while x + int(item[1]) >= 10 and orientation == 'y':
+                clear_screen()
+                self.print_board()
+                position = input("{}, {} is invalid (out of bounds). Place the location of the {} ({} spaces): "
+                                .format(Player.name, position, item[0], item[1])).lower().replace(" ","")
+                orientation = input("Is it horizontal? (Y/N): ").lower().replace(" ","")
+            while y + int(item[1]) >= 10 and orientation == 'n':
                 clear_screen()
                 self.print_board()
                 position = input("{}, {} is invalid (out of bounds). Place the location of the {} ({} spaces): "
@@ -189,11 +199,7 @@ class Board(object):
                 orientation = input("Is it horizontal? (Y/N): ").lower().replace(" ","")
             while orientation != 'y' and orientation != 'n':
                 orientation = input("{} is not a valid input. Is it horizontal? (Y/N): ").lower().replace(" ","")
-                orientation = orientation[:1]
-
-
-
-
+            orientation = orientation[:1]
 
             Ship.make_ships(item[0], item[1], position, orientation, self)
             self.update_board(Ship)
