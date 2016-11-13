@@ -105,12 +105,14 @@ class Ship(object):
 
     def __init__(self):
         self.ships = {}
+        self.coordbank = []
 
     def make_ships(self, name, length, position, orientation, Board):
         self.ships[name] = {"length": length, "Coordinates": {}}
         x = ord(position[:1])
         y = int(position[1:])
         coords = {}
+
         if orientation.lower() == "y":
             for i in range(0, length):
                 place = ''.join([chr(x), str(y)])
@@ -124,11 +126,15 @@ class Ship(object):
         self.ships[name]["Coordinates"] = coords
 
     # Validating for ship overlap
-        a = list(self.ships[name]["Coordinates"].keys())
+        for item in self.ships[name]["Coordinates"]:
+            self.coordbank.append(item)
+            print(self.coordbank)
         names = []
         for item in self.ships:
             names.append(item)
-        for item in a:
+            # a.append(list(self.ships[item]["Coordinates"].keys()))
+        print("Coordbank = {}".format(self.coordbank))
+        for item in self.coordbank:
             for var in names:
                 if item in self.ships[var]["Coordinates"].keys() and self.ships[name] != self.ships[var]:
                     Board.print_board()
