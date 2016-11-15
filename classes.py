@@ -123,25 +123,24 @@ class Ship(object):
                 place = ''.join([chr(x), str(y)])
                 coords[place] = "|"
                 y = y + 1
-        self.ships[name]["Coordinates"] = coords
-
-    # Validating for ship overlap
-        for item in self.ships[name]["Coordinates"]:
-            self.coordbank.append(item)
-            print(self.coordbank)
+        # Validating for ship overlap
         names = []
         for item in self.ships:
             names.append(item)
-            # a.append(list(self.ships[item]["Coordinates"].keys()))
-        print("Coordbank = {}".format(self.coordbank))
-        for item in self.coordbank:
-            for var in names:
-                if item in self.ships[var]["Coordinates"].keys() and self.ships[name] != self.ships[var]:
+        for var in names:
+            for item in coords.keys():
+                while item in list(self.ships[var]["Coordinates"].keys()) and self.ships[name] != self.ships[var]:
                     Board.print_board()
                     new_position = input("There is an overlap at {}. Please enter a different starting position: ".format(item)).replace(" ","")
                     new_orientation = input("Is it horizontal? (Y/N): ").replace(" ","")
                     clear_screen()
                     self.make_ships(name, length, new_position, new_orientation, Board)
+                    return
+        for item in self.ships[name]["Coordinates"]:
+            self.coordbank.append(item)
+            print(self.coordbank)
+
+        self.ships[name]["Coordinates"] = coords
 
     def clear_ships(self):
         for item in self.ships:
