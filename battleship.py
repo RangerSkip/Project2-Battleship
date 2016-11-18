@@ -17,8 +17,15 @@ EMPTY = 'O'
 MISS = '.'
 HIT = '*'
 SUNK = '#'
-
 VICTORY = False
+
+
+def victory(Player):
+    clear_screen()
+    print("Congratulations {}! You sunk all of your opponents ships!".format(Player.name))
+    print("{} is Victorious!!".format(Player.name))
+
+
 
 def clear_screen():
     print("\033c", end="")
@@ -51,7 +58,7 @@ if __name__ =='__main__':
     clear_screen()
 
     # Begin the game
-    while VICTORY == False:
+    while True:
         input("{}, when you are ready, press Enter and pass me to {}.".format(p2.name, p1.name))
         clear_screen()
         input("{}, press Enter when you are ready.".format(p1.name))
@@ -60,6 +67,8 @@ if __name__ =='__main__':
         p2_guess_board.print_board()
         print("{}'s board:".format(p2.name))
         p1.guess(p1_guess_board, p2_ships)
+        if p1.winner == True:
+            break
 
         input("{}, when you are ready, press Enter and pass me to {}.".format(p1.name, p2.name))
         clear_screen()
@@ -69,9 +78,17 @@ if __name__ =='__main__':
         p1_guess_board.print_board()
         print("{}'s board:".format(p1.name))
         p2.guess(p2_guess_board, p1_ships)
+        if p2.winner == True:
+            break
 
-    print("{}'s board: ".format(p1.name))
-    p1_board.print_board()
-    print("{}'s board: ".format(p2.name))
-    p2_board.print_board()
-    input("Press Enter to quit.".format())
+    clear_screen()
+    if p1.winner == True:
+        print("{}'s board:".format(p1.name))
+        p1_board.print_board()
+        print("{}'s board:".format(p2.name))
+        p2_board.print_board()
+    else:
+        print("{}'s board:".format(p2.name))
+        p2_board.print_board()
+        print("{}'s board:".format(p1.name))
+        p1_board.print_board()

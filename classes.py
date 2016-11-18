@@ -1,4 +1,4 @@
-from battleship import clear_screen
+from battleship import clear_screen, victory
 import pdb
 import re
 import sys
@@ -34,6 +34,7 @@ class Player(object):
         self.score = 0
         self.ships_sunk = 0
         self.guesses = []
+        self.winner = False
 
     def guess(self, Board, Ship):
         Board.print_board()
@@ -70,34 +71,27 @@ class Player(object):
             print("Miss!")
 
     # Win Condition
-        if self.ships_sunk == len(SHIP_INFO):
-            self.victory()
-
+        if self.ships_sunk == len(SHIP_INFO_MOD):
+            self.winner = True
+            victory(self)
 
 
     def target_check(self):
     # target needs to be between a1 and j10
         target = input("{}, please pick a target: ".format(self.name)).lower().replace(" ","")
         x = ord(target[:1])-97
-        y = int(target[1:2])-1
+        y = int(target[1:])-1
     # checking in bounds
         while x >= 10 or y >= 10:
-            print("{} is an invalid target.".format(target))
-            self.target_check()
+            target = input("{}, {} is an invalid target. Please pick a new target: ".format(self.name, target))
+            x = ord(target[:1])-97
+            y = int(target[1:])-1
     # checking if already guessed
-        if target in self.guesses:
-            print("{}, you have already guessed {}.".format(self.name, target))
-            self.target_check()
+        while target in self.guesses:
+            target = input("{}, you have already guessed {}. Please pick a new target: ".format(self.name, target))
         else:
             self.guesses.append(target)
         return target
-
-
-    def victory(self):
-        print("Congratulations {}! You sunk all of your opponents ships!".format(self.name))
-        print("{} is Victorious!!".format(self.name))
-        VICTORY = True
-
 
 
 
@@ -176,7 +170,7 @@ class Board(object):
         self.print_board()
 
     def make_ships(self, Ship, Player):
-        for item in SHIP_INFO:
+        for item in SHIP_INFO_MOD:
             position = input("{}, Place the location of the {} ({} spaces): "
                             .format(Player.name, item[0], item[1])).lower().replace(" ","")
             x = ord(position[:1])-97
